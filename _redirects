@@ -1,1 +1,1 @@
-/product-details/:name   /product-details?name=:name   200
+/product-details/:name   /product-details.html?name=:name   200
