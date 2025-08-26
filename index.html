@@ -120,9 +120,15 @@
                 </div>
                 <div class="relative">
                     <button id="cart-btn" class="relative p-2 rounded-full bg-gray-100 hover:bg-gray-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.182 1.703.666 1.703H17m0-14a2 2 0 110 4 2 2 0 010-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <!-- This path creates the main body of the cart -->
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4H6z"></path>
+                            <!-- This path creates the handles/straps of the cart -->
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <!-- This path creates the items inside the cart -->
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
                         </svg>
+
                         <span id="cart-count" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">0</span>
                     </button>
                     <div id="cart-dropdown" class="hidden absolute right-0 mt-3 w-80 bg-white rounded-lg shadow-xl z-50 transition-all duration-300 transform scale-95 opacity-0">
@@ -627,21 +633,65 @@
             const authSection = document.getElementById('auth-section');
 
             if (token && user) {
-                authSection.innerHTML = `
-                    <div class="relative group">
-                        <button class="flex items-center p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors focus:outline-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" viewBox="0 0 24 24" fill="currentColor">
-                                <path fill-rule="evenodd" d="M18.685 19.034a1.5 1.5 0 00.177-.52l-.478-1.637C18.175 14.156 16.635 13 14.86 13h-5.72c-1.775 0-3.315 1.156-3.724 2.877l-.478 1.637a1.5 1.5 0 00.177.52h12.59zM12 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
-                                <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zM12 2.75a9.25 9.25 0 100 18.5 9.25 9.25 0 000-18.5z" clip-rule="evenodd" />
-                            </svg>
-                            <span class="ml-2 font-medium text-gray-700 hidden md:block">${user.name}</span>
-                        </button>
-                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden group-hover:block transition-all duration-300 transform origin-top-right">
-                            <a href="user.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
-                            <button onclick="logout()" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</button>
-                        </div>
-                    </div>
-                `;
+                // A simple hashing function to create a consistent color from a string.
+// This ensures that the same name always gets the same color.
+function stringToHslColor(str, s, l) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    const h = hash % 360;
+    return 'hsl(' + h + ', ' + s + '%, ' + l + '%)';
+}
+
+// Function to generate the SVG with initials and a dynamic background color.
+function createAvatarSvg(name) {
+    // Get the initials from the name.
+    const nameParts = name.split(' ');
+    let initials = '';
+    if (nameParts.length >= 2) {
+        initials = nameParts[0].charAt(0).toUpperCase() + nameParts[1].charAt(0).toUpperCase();
+    } else if (nameParts.length === 1 && nameParts[0].length > 0) {
+        initials = nameParts[0].charAt(0).toUpperCase();
+    } else {
+        initials = '??'; // Fallback for empty or invalid names
+    }
+
+    // Generate a consistent color based on the full name.
+    const bgColor = stringToHslColor(name, 75, 50);
+
+    // Create the SVG markup.
+    return `
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <rect width="24" height="24" rx="12" fill="${bgColor}"></rect>
+            <text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#ffffff" font-weight="bold">
+                ${initials}
+            </text>
+        </svg>
+    `;
+}
+
+
+
+
+// Use the new function to create the dynamic SVG
+const avatarSvg = createAvatarSvg(user.name);
+
+// Update the innerHTML with the new dynamic avatar and the user's name
+authSection.innerHTML = `
+    <div class="relative group">
+        <button class="flex items-center p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors focus:outline-none">
+            ${avatarSvg}
+            <span class="ml-2 font-medium text-gray-700 hidden md:block">${user.name}</span>
+        </button>
+        <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden group-hover:block transition-all duration-300 transform origin-top-right">
+            <a href="user.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+            <button onclick="logout()" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</button>
+        </div>
+    </div>
+`;
+
             } else {
                 authSection.innerHTML = `
                     <button id="login-btn" onclick="location.href='login.html'" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors hidden sm:block">Login</button>

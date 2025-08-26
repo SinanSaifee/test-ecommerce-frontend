@@ -50,11 +50,15 @@
                 </a>
                 <div class="relative">
                     <button id="cart-btn" class="relative p-2 rounded-full bg-gray-100 hover:bg-gray-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.182 1.703.666 1.703H17m0-14a2 2 0 110 4 2 2 0 010-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <!-- This path creates the main body of the cart -->
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4H6z"></path>
+                        <!-- This path creates the handles/straps of the cart -->
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <!-- This path creates the items inside the cart -->
+                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
+
                         <span id="cart-count"
                             class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">0</span>
                     </button>
