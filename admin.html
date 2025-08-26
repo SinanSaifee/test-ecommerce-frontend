@@ -38,9 +38,13 @@
                         </svg>
                     </button>
                 </div>
-                <button type="submit"
-                        class="w-full py-3 px-6 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition-colors duration-300">
-                    Login
+                <button type="submit" id="login-button"
+                        class="relative w-full py-3 px-6 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition-colors duration-300 disabled:bg-indigo-400 disabled:cursor-not-allowed">
+                    <span id="login-button-text">Login</span>
+                    <svg id="login-spinner" class="hidden absolute top-1/2 left-1/2 -mt-2.5 -ml-2.5 animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
                 </button>
                 <p id="login-error" class="text-red-500 text-center text-sm hidden">Invalid credentials. Please try again.</p>
             </form>
@@ -88,17 +92,19 @@
                             <input type="url" name="image" placeholder="Image URL" required
                                    class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             <button type="submit" id="submit-button"
-                                    class="w-full py-3 px-6 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition-colors duration-300">
-                                Add Product
+                                    class="relative w-full py-3 px-6 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition-colors duration-300 disabled:bg-indigo-400 disabled:cursor-not-allowed">
+                                <span id="submit-button-text">Add Product</span>
+                                <svg id="submit-spinner" class="hidden absolute top-1/2 left-1/2 -mt-2.5 -ml-2.5 animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
                             </button>
                         </form>
                     </div>
                     <div class="md:col-span-2">
                         <h2 class="text-2xl font-bold mb-6 text-gray-800">Product List</h2>
                         <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
-                        </div>
-                        <div id="status-message-products" class="text-center text-lg text-gray-500 mt-8 hidden">
-                            Failed to load products.
+                            <p class="col-span-full text-center text-gray-500">Loading products...</p>
                         </div>
                     </div>
                 </div>
@@ -114,9 +120,6 @@
                     <div id="user-list" class="space-y-4">
                         <p class="text-center text-gray-500">Loading users...</p>
                     </div>
-                    <div id="status-message-users" class="text-center text-lg text-gray-500 mt-4 hidden">
-                        Failed to load users.
-                    </div>
                 </div>
             </section>
 
@@ -126,9 +129,6 @@
                     <div id="order-list" class="space-y-4">
                         <p class="text-center text-gray-500">Loading orders...</p>
                     </div>
-                    <div id="status-message-orders" class="text-center text-lg text-gray-500 mt-4 hidden">
-                        Failed to load orders.
-                    </div>
                 </div>
             </section>
         </main>
@@ -136,7 +136,6 @@
 
     <script>
         // --- TOKEN MANAGEMENT FUNCTIONS ---
-        // These functions manage the authentication token in localStorage.
         function getToken() {
             return localStorage.getItem('adminToken');
         }
@@ -156,12 +155,17 @@
         const logoutButton = document.getElementById('logout-button');
         const loginError = document.getElementById('login-error');
         const productForm = document.getElementById('product-form');
-        const list = document.getElementById('product-list');
-        const statusMessage = document.getElementById('status-message-products');
+        const productList = document.getElementById('product-list');
         const productOriginalName = document.getElementById('product-original-name');
         const submitButton = document.getElementById('submit-button');
+        const submitButtonText = document.getElementById('submit-button-text');
+        const submitSpinner = document.getElementById('submit-spinner');
+        const loginButton = document.getElementById('login-button');
+        const loginButtonText = document.getElementById('login-button-text');
+        const loginSpinner = document.getElementById('login-spinner');
+        const togglePassword = document.getElementById('toggle-password');
+        const passwordInput = document.getElementById('password');
 
-        // New DOM elements for tabbed content
         const tabProducts = document.getElementById('tab-products');
         const tabUsers = document.getElementById('tab-users');
         const tabOrders = document.getElementById('tab-orders');
@@ -170,9 +174,9 @@
         const sectionOrders = document.getElementById('section-orders');
         const userSearchInput = document.getElementById('user-search-input');
         const userList = document.getElementById('user-list');
-        const statusMessageUsers = document.getElementById('status-message-users');
         const orderList = document.getElementById('order-list');
-        const statusMessageOrders = document.getElementById('status-message-orders');
+        
+        let allUsers = [];
 
         // --- UI STATE FUNCTIONS ---
         function showLoginForm() {
@@ -183,11 +187,20 @@
         function showAdminPanel() {
             loginContainer.classList.add('hidden');
             adminPanel.classList.remove('hidden');
-            showSection('section-products'); // Show products tab by default
-            loadProducts();
+            const params = new URLSearchParams(window.location.search);
+            const tab = params.get('tab');
+            if (tab === 'users') {
+                showSection('section-users');
+                loadUsers();
+            } else if (tab === 'orders') {
+                showSection('section-orders');
+                loadOrders();
+            } else {
+                showSection('section-products');
+                loadProducts();
+            }
         }
-
-        // Initial state check for token on page load
+        
         document.addEventListener('DOMContentLoaded', () => {
             if (getToken()) {
                 showAdminPanel();
@@ -196,7 +209,6 @@
             }
         });
 
-        // Function to show a specific section and highlight its tab
         function showSection(sectionId) {
             const sections = [sectionProducts, sectionUsers, sectionOrders];
             sections.forEach(sec => sec.classList.add('hidden'));
@@ -213,36 +225,48 @@
             activeTab.classList.remove('text-gray-600', 'hover:bg-gray-300');
         }
 
-        // Tab click handlers
-       // Function to update the URL parameter
-function updateURL(tabName) {
-    const url = new URL(window.location);
-    url.searchParams.set('tab', tabName);
-    window.history.pushState({}, '', url);
-}
+        function updateURL(tabName) {
+            const url = new URL(window.location);
+            url.searchParams.set('tab', tabName);
+            window.history.pushState({}, '', url);
+        }
 
-// Event listeners for tabs
-tabProducts.addEventListener('click', () => {
-    showSection('section-products');
-    loadProducts();
-    updateURL('products');
-});
+        // --- Event Listeners ---
+        tabProducts.addEventListener('click', () => {
+            showSection('section-products');
+            loadProducts();
+            updateURL('products');
+        });
 
-tabUsers.addEventListener('click', () => {
-    showSection('section-users');
-    loadUsers();
-    updateURL('users');
-});
+        tabUsers.addEventListener('click', () => {
+            showSection('section-users');
+            loadUsers();
+            updateURL('users');
+        });
 
-tabOrders.addEventListener('click', () => {
-    showSection('section-orders');
-    loadOrders();
-    updateURL('orders');
-});
+        tabOrders.addEventListener('click', () => {
+            showSection('section-orders');
+            loadOrders();
+            updateURL('orders');
+        });
+
+        // Toggle password visibility
+        togglePassword.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            const eyeOpen = document.getElementById('eye-open');
+            const eyeClosed = document.getElementById('eye-closed');
+            eyeOpen.classList.toggle('hidden');
+            eyeClosed.classList.toggle('hidden');
+        });
 
         // --- AUTHENTICATION ---
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            loginButton.disabled = true;
+            loginButtonText.classList.add('hidden');
+            loginSpinner.classList.remove('hidden');
+            
             const username = e.target.username.value;
             const password = e.target.password.value;
 
@@ -264,6 +288,10 @@ tabOrders.addEventListener('click', () => {
             } catch (err) {
                 console.error('Login failed:', err);
                 loginError.classList.remove('hidden');
+            } finally {
+                loginButton.disabled = false;
+                loginButtonText.classList.remove('hidden');
+                loginSpinner.classList.add('hidden');
             }
         });
 
@@ -275,6 +303,10 @@ tabOrders.addEventListener('click', () => {
         // --- PRODUCT MANAGEMENT ---
         productForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            submitButton.disabled = true;
+            submitButtonText.classList.add('hidden');
+            submitSpinner.classList.remove('hidden');
+
             const form = e.target;
             const originalName = form['original-name'].value;
             const product = {
@@ -317,11 +349,15 @@ tabOrders.addEventListener('click', () => {
 
                 form.reset();
                 productOriginalName.value = '';
-                submitButton.textContent = 'Add Product';
+                submitButtonText.textContent = 'Add Product';
                 loadProducts();
             } catch (err) {
                 console.error('Failed to save product:', err);
                 alert(err.message);
+            } finally {
+                submitButton.disabled = false;
+                submitButtonText.classList.remove('hidden');
+                submitSpinner.classList.add('hidden');
             }
         });
 
@@ -333,7 +369,7 @@ tabOrders.addEventListener('click', () => {
             productForm.stock.value = stock;
             productForm.image.value = image;
             productOriginalName.value = name;
-            submitButton.textContent = 'Update Product';
+            submitButtonText.textContent = 'Update Product';
         }
 
         async function deleteProduct(name) {
@@ -361,10 +397,14 @@ tabOrders.addEventListener('click', () => {
         }
 
         async function loadProducts() {
-            try {
-                list.innerHTML = '<p class="col-span-full text-center text-gray-500">Loading products...</p>';
-                statusMessage.classList.add('hidden');
+            productList.innerHTML = `<p class="col-span-full text-center text-gray-500 flex items-center justify-center">
+                                         <svg class="animate-spin h-5 w-5 mr-3 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                         </svg> Loading products...
+                                     </p>`;
 
+            try {
                 const res = await fetch('https://test-ecommerce-backend-icgy.onrender.com/api/products');
 
                 if (!res.ok) {
@@ -372,9 +412,9 @@ tabOrders.addEventListener('click', () => {
                 }
 
                 const products = await res.json();
-                list.innerHTML = '';
+                productList.innerHTML = '';
                 if (products.length === 0) {
-                    list.innerHTML = '<p class="col-span-full text-center text-gray-500">No products found.</p>';
+                    productList.innerHTML = '<p class="col-span-full text-center text-gray-500">No products found.</p>';
                     return;
                 }
                 products.forEach(p => {
@@ -398,22 +438,24 @@ tabOrders.addEventListener('click', () => {
                             </button>
                         </div>
                     `;
-                    list.appendChild(productDiv);
+                    productList.appendChild(productDiv);
                 });
             } catch (err) {
                 console.error('Failed to load products:', err);
-                statusMessage.classList.remove('hidden');
+                productList.innerHTML = '<p class="col-span-full text-center text-red-500">Failed to load products.</p>';
             }
         }
 
-        // --- New User Management Functions ---
-        let allUsers = [];
-
+        // --- User Management Functions ---
         async function loadUsers() {
+            userList.innerHTML = `<p class="text-center text-gray-500 flex items-center justify-center">
+                                    <svg class="animate-spin h-5 w-5 mr-3 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg> Loading users...
+                                  </p>`;
+
             try {
-                userList.innerHTML = '<p class="text-center text-gray-500">Loading users...</p>';
-                statusMessageUsers.classList.add('hidden');
-                
                 const res = await fetch('https://test-ecommerce-backend-icgy.onrender.com/api/users', {
                     headers: { 'Authorization': `Bearer ${getToken()}` }
                 });
@@ -431,8 +473,7 @@ tabOrders.addEventListener('click', () => {
                 renderUsers(allUsers);
             } catch (err) {
                 console.error('Failed to load users:', err);
-                userList.innerHTML = '';
-                statusMessageUsers.classList.remove('hidden');
+                userList.innerHTML = '<p class="text-center text-red-500">Failed to load users.</p>';
             }
         }
 
@@ -477,14 +518,13 @@ tabOrders.addEventListener('click', () => {
                 }
                 
                 await res.json();
-                loadUsers(); // Reload the list
+                loadUsers();
             } catch (err) {
                 console.error('Delete failed:', err);
                 alert('Failed to delete user.');
             }
         }
 
-        // Frontend search logic for users
         userSearchInput.addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase();
             const filteredUsers = allUsers.filter(user => 
@@ -493,12 +533,16 @@ tabOrders.addEventListener('click', () => {
             renderUsers(filteredUsers);
         });
 
-        // --- New Order Management Functions ---
+        // --- Order Management Functions ---
         async function loadOrders() {
-            try {
-                orderList.innerHTML = '<p class="text-center text-gray-500">Loading orders...</p>';
-                statusMessageOrders.classList.add('hidden');
+            orderList.innerHTML = `<p class="text-center text-gray-500 flex items-center justify-center">
+                                     <svg class="animate-spin h-5 w-5 mr-3 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                     </svg> Loading orders...
+                                  </p>`;
 
+            try {
                 const res = await fetch('https://test-ecommerce-backend-icgy.onrender.com/api/orders', {
                     headers: { 'Authorization': `Bearer ${getToken()}` }
                 });
@@ -516,8 +560,7 @@ tabOrders.addEventListener('click', () => {
                 renderOrders(orders);
             } catch (err) {
                 console.error('Failed to load orders:', err);
-                orderList.innerHTML = '';
-                statusMessageOrders.classList.remove('hidden');
+                orderList.innerHTML = '<p class="text-center text-red-500">Failed to load orders.</p>';
             }
         }
 
@@ -527,7 +570,7 @@ tabOrders.addEventListener('click', () => {
                 orderList.innerHTML = '<p class="text-center text-gray-500">No orders found.</p>';
                 return;
             }
-            orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Sort by newest first
+            orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             orders.forEach(order => {
                 const orderDiv = document.createElement('div');
                 orderDiv.className = `bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-200`;
@@ -552,9 +595,9 @@ tabOrders.addEventListener('click', () => {
                     <p class="text-sm text-gray-600 mb-2">
                         <span class="font-semibold">Address:</span> ${order.shipping.address}
                     </p>
-                       <p class="text-sm text-gray-600 mb-2">
-                        <span class="font-semibold">Number:</span> ${order.shipping.phone}
-                    </p>
+                        <p class="text-sm text-gray-600 mb-2">
+                         <span class="font-semibold">Number:</span> ${order.shipping.phone}
+                     </p>
                     <p class="text-sm text-gray-600 mb-2">
                         <span class="font-semibold">Total:</span> $<span class="font-bold text-indigo-700">${orderTotal}</span>
                     </p>
@@ -568,25 +611,6 @@ tabOrders.addEventListener('click', () => {
                 orderList.appendChild(orderDiv);
             });
         }
-        window.addEventListener('DOMContentLoaded', () => {
-    const params = new URLSearchParams(window.location.search);
-    const tab = params.get('tab');
-
-    switch (tab) {
-        case 'products':
-            tabProducts.click(); // Simulate click
-            break;
-        case 'users':
-            tabUsers.click(); // Simulate click
-            break;
-        case 'orders':
-            tabOrders.click(); // Simulate click
-            break;
-        default:
-            // Optional: set a default tab if none is specified
-            tabProducts.click();
-    }
-});
     </script>
 </body>
 </html>
