@@ -546,7 +546,7 @@
                 const res = await fetch('https://test-ecommerce-backend-icgy.onrender.com/api/orders', {
                     headers: { 'Authorization': `Bearer ${getToken()}` }
                 });
-
+              
                 if (!res.ok) {
                     if (res.status === 401 || res.status === 403) {
                         removeToken();
@@ -586,7 +586,7 @@
 
                 orderDiv.innerHTML = `
                     <div class="flex items-center justify-between mb-2 pb-2 border-b border-gray-200">
-                        <h3 class="font-bold text-gray-900">Order #${order.orderId}</h3>
+                        <h3 class="font-bold text-gray-900">Order #${order._id}</h3>
                         <span class="text-xs text-gray-500">${new Date(order.createdAt).toLocaleString()}</span>
                     </div>
                     <p class="text-sm text-gray-600 mb-2">
