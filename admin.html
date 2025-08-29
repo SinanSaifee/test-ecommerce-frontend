@@ -1,110 +1,108 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin Panel - Product Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f1f5f9; /* Tailwind's gray-100 */
+            background-color: #f1f5f9;
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body class="text-gray-800 bg-gray-100">
 
-    <div id="login-container" class="flex items-center justify-center min-h-screen bg-gray-100">
-        <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-sm">
-            <h2 class="text-3xl font-bold text-center mb-6 text-indigo-700">Admin Login</h2>
-            <form id="login-form" class="space-y-4">
-                <input type="text" id="username" placeholder="Admin ID" required
-                       class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+    <div class="flex items-center bg-gray-100 justify-center min-h-screen" id="login-container">
+        <div class="w-full bg-white max-w-sm p-8 rounded-xl shadow-lg">
+            <h2 class="font-bold mb-6 text-3xl text-center text-indigo-700">Admin Login</h2>
+            <form class="space-y-4" id="login-form">
+                <input class="rounded-lg w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3" placeholder="Admin ID" required id="username">
                 <div class="relative">
-                    <input type="password" id="password" placeholder="Password" required
-                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <button type="button" id="toggle-password" class="absolute inset-y-0 right-0 px-4 text-gray-500 focus:outline-none" aria-label="Toggle password visibility">
-                        <svg id="eye-open" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <input class="rounded-lg w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3" placeholder="Password" required type="password" id="password">
+                    <button class="px-4 absolute focus:outline-none inset-y-0 right-0 text-gray-500" id="toggle-password" type="button" aria-label="Toggle password visibility">
+                        <svg class="hidden h-5 w-5" fill="none" id="eye-open" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                             <circle cx="12" cy="12" r="3"></circle>
                         </svg>
-                        <svg id="eye-closed" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="h-5 w-5" fill="none" id="eye-closed" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
                             <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.42 3.49"></path>
                             <path d="M15 15a3 3 0 1 0-3-3"></path>
-                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                            <line x1="1" x2="23" y1="1" y2="23"></line>
                         </svg>
                     </button>
                 </div>
-                <button type="submit" id="login-button"
-                        class="relative w-full py-3 px-6 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition-colors duration-300 disabled:bg-indigo-400 disabled:cursor-not-allowed">
+                <button class="rounded-lg w-full bg-indigo-600 disabled:bg-indigo-400 disabled:cursor-not-allowed duration-300 font-bold hover:bg-indigo-700 px-6 py-3 relative text-white transition-colors" id="login-button" type="submit">
                     <span id="login-button-text">Login</span>
-                    <svg id="login-spinner" class="hidden absolute top-1/2 left-1/2 -mt-2.5 -ml-2.5 animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <svg class="hidden h-5 w-5 -ml-2.5 -mt-2.5 absolute animate-spin left-1/2 text-white top-1/2" fill="none" id="login-spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" class="opacity-25" stroke="currentColor" stroke-width="4"></circle>
+                        <path d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" class="opacity-75" fill="currentColor"></path>
                     </svg>
                 </button>
-                <p id="login-error" class="text-red-500 text-center text-sm hidden">Invalid credentials. Please try again.</p>
+                <p class="hidden text-center text-red-500 text-sm" id="login-error">Invalid credentials. Please try again.</p>
             </form>
         </div>
     </div>
 
-    <div id="admin-panel" class="hidden">
-        <header class="bg-white shadow-sm py-6">
-            <div class="container mx-auto px-4 flex justify-between items-center">
-                <div class="flex-grow text-center">
-                    <h1 class="text-4xl font-extrabold text-indigo-700">Admin Panel</h1>
+    <div class="hidden" id="admin-panel">
+        <header class="bg-white py-6 shadow-sm">
+            <div class="px-4 container mx-auto flex items-center justify-between">
+                <div class="text-center flex-grow">
+                    <h1 class="font-extrabold text-4xl text-indigo-700">Admin Panel</h1>
                     <p class="text-gray-500 mt-2">Manage your e-commerce platform.</p>
                 </div>
-                <button id="logout-button" class="py-2 px-6 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-colors">
-                    Logout
-                </button>
+                <button class="rounded-lg transition-colors py-2 text-white bg-red-600 font-bold hover:bg-red-700 px-6" id="logout-button">Logout</button>
             </div>
         </header>
 
         <nav class="bg-gray-200 shadow-md">
-            <div class="container mx-auto px-4 py-3 flex space-x-4">
-                <button id="tab-products" class="tab-button px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold transition-colors duration-200">Products</button>
-                <button id="tab-users" class="tab-button px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-300 transition-colors duration-200">Users</button>
-                <button id="tab-orders" class="tab-button px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-300 transition-colors duration-200">Orders</button>
+            <div class="px-4 container mx-auto flex py-3 space-x-4">
+                <button class="rounded-lg transition-colors py-2 duration-200 px-4 tab-button bg-indigo-600 font-semibold text-white" id="tab-products">Products</button>
+                <button class="rounded-lg transition-colors py-2 duration-200 px-4 tab-button hover:bg-gray-300 text-gray-600" id="tab-users">Users</button>
+                <button class="rounded-lg transition-colors py-2 duration-200 px-4 tab-button hover:bg-gray-300 text-gray-600" id="tab-orders">Orders</button>
             </div>
         </nav>
 
-        <main class="container mx-auto px-4 py-8">
+        <main class="px-4 container mx-auto py-8">
             <section id="section-products">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="md:col-span-1 bg-white p-8 rounded-xl shadow-lg h-fit">
-                        <h2 class="text-2xl font-bold mb-6 text-gray-800">Add/Update Product</h2>
-                        <form id="product-form" class="space-y-4">
-                            <input type="hidden" id="product-original-name" name="original-name">
-                            <input type="text" name="name" placeholder="Name" required
-                                   class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <input type="number" name="price" placeholder="Price" required
-                                   class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <input type="text" name="category" placeholder="Category" required
-                                   class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <input type="text" name="description" placeholder="Description" required
-                                   class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <input type="number" name="stock" placeholder="Stock" required
-                                   class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <input type="url" name="image" placeholder="Image URL" required
-                                   class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <button type="submit" id="submit-button"
-                                    class="relative w-full py-3 px-6 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition-colors duration-300 disabled:bg-indigo-400 disabled:cursor-not-allowed">
+                <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+                    <div class="bg-white p-8 rounded-xl shadow-lg h-fit md:col-span-1">
+                        <h2 class="font-bold text-2xl text-gray-800 mb-6">Add/Update Product</h2>
+                        <form class="space-y-4" id="product-form">
+                            <input name="original-name" type="hidden" id="product-original-name">
+                            <input class="rounded-lg w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3" placeholder="Name" required name="name">
+                            <input class="rounded-lg w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3" placeholder="Price" required name="price" type="number">
+                            <input class="rounded-lg w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3" placeholder="Category" required name="category">
+                            <input class="rounded-lg w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3" placeholder="Description" required name="description">
+                            <input class="rounded-lg w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3" placeholder="Stock" required name="stock" type="number">
+                            <input class="rounded-lg w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3" placeholder="Image URL" required name="image" type="url">
+
+                            <div>
+                                <h3 class="font-semibold text-gray-700 mb-2">Product Selections</h3>
+                                <div id="selections-container" class="space-y-2"></div>
+                                <div class="flex space-x-2 mt-2">
+                                    <button type="button" id="add-selection-btn" class="flex-1 rounded-lg px-4 py-2 bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors">Add Selection</button>
+                                </div>
+                            </div>
+
+                            <button class="rounded-lg w-full bg-indigo-600 disabled:bg-indigo-400 disabled:cursor-not-allowed duration-300 font-bold hover:bg-indigo-700 px-6 py-3 relative text-white transition-colors" id="submit-button" type="submit">
                                 <span id="submit-button-text">Add Product</span>
-                                <svg id="submit-spinner" class="hidden absolute top-1/2 left-1/2 -mt-2.5 -ml-2.5 animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                <svg class="hidden h-5 w-5 -ml-2.5 -mt-2.5 absolute animate-spin left-1/2 text-white top-1/2" fill="none" id="submit-spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="12" cy="12" r="10" class="opacity-25" stroke="currentColor" stroke-width="4"></circle>
+                                    <path d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" class="opacity-75" fill="currentColor"></path>
                                 </svg>
                             </button>
                         </form>
                     </div>
+
                     <div class="md:col-span-2">
-                        <h2 class="text-2xl font-bold mb-6 text-gray-800">Product List</h2>
-                        <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
-                            <p class="col-span-full text-center text-gray-500">Loading products...</p>
+                        <h2 class="font-bold text-2xl text-gray-800 mb-6">Product List</h2>
+                        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2 sm:grid-cols-2" id="product-list">
+                            <p class="text-center text-gray-500 col-span-full">Loading products...</p>
                         </div>
                     </div>
                 </div>
@@ -112,12 +110,11 @@
 
             <section id="section-users" class="hidden">
                 <div class="bg-white p-8 rounded-xl shadow-lg">
-                    <h2 class="text-2xl font-bold mb-4 text-gray-800">User Management</h2>
+                    <h2 class="font-bold text-2xl text-gray-800 mb-4">User Management</h2>
                     <div class="mb-4">
-                        <input type="text" id="user-search-input" placeholder="Search users by name or email..."
-                               class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <input class="rounded-lg w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3" placeholder="Search users by name or email..." id="user-search-input">
                     </div>
-                    <div id="user-list" class="space-y-4">
+                    <div class="space-y-4" id="user-list">
                         <p class="text-center text-gray-500">Loading users...</p>
                     </div>
                 </div>
@@ -125,13 +122,41 @@
 
             <section id="section-orders" class="hidden">
                 <div class="bg-white p-8 rounded-xl shadow-lg">
-                    <h2 class="text-2xl font-bold mb-4 text-gray-800">Order History</h2>
-                    <div id="order-list" class="space-y-4">
+                    <h2 class="font-bold text-2xl text-gray-800 mb-4">Order History</h2>
+                    <div class="space-y-4" id="order-list">
                         <p class="text-center text-gray-500">Loading orders...</p>
                     </div>
                 </div>
             </section>
         </main>
+    </div>
+
+    <div id="selection-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
+        <div class="relative bg-white p-8 rounded-xl shadow-lg w-11/12 md:w-1/2 lg:w-1/3">
+            <h3 class="font-bold text-xl text-gray-800 mb-4">Add/Edit Selection</h3>
+            <form class="space-y-4" id="selection-form">
+                <div>
+                    <label for="selection-type" class="block text-sm font-medium text-gray-700">Selection Type</label>
+                    <select id="selection-type" class="mt-1 block w-full rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3">
+                        <option value="size">Size (e.g., S, M, L)</option>
+                        <option value="color">Color (e.g., Red, Blue, Green)</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="selection-name" class="block text-sm font-medium text-gray-700">Custom Selection Name</label>
+                    <input type="text" id="selection-name" placeholder="e.g., Material, Flavour" class="mt-1 block w-full rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3" disabled>
+                </div>
+                <div>
+                    <label for="selection-values" class="block text-sm font-medium text-gray-700">Selection Values (comma-separated)</label>
+                    <input type="text" id="selection-values" placeholder="e.g., S, M, L or Red, Blue, Green" class="mt-1 block w-full rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3" required>
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" id="cancel-selection-btn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">Save Selection</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script>
@@ -177,6 +202,18 @@
         const orderList = document.getElementById('order-list');
         
         let allUsers = [];
+
+        // New DOM Elements for Selections
+        const selectionsContainer = document.getElementById('selections-container');
+        const addSelectionBtn = document.getElementById('add-selection-btn');
+        const selectionModal = document.getElementById('selection-modal');
+        const selectionForm = document.getElementById('selection-form');
+        const selectionType = document.getElementById('selection-type');
+        const selectionNameInput = document.getElementById('selection-name');
+        const selectionValuesInput = document.getElementById('selection-values');
+        const cancelSelectionBtn = document.getElementById('cancel-selection-btn');
+
+        let currentSelections = [];
 
         // --- UI STATE FUNCTIONS ---
         function showLoginForm() {
@@ -300,6 +337,78 @@
             showLoginForm();
         });
 
+        // --- New functions for Selection Management ---
+        function renderSelections() {
+            selectionsContainer.innerHTML = '';
+            currentSelections.forEach((sel, index) => {
+                const selectionDiv = document.createElement('div');
+                selectionDiv.className = 'bg-gray-100 p-3 rounded-lg flex items-center justify-between';
+                selectionDiv.innerHTML = `
+                    <div>
+                        <span class="font-bold text-sm">${sel.name}:</span>
+                        <span class="text-sm">${sel.values.join(', ')}</span>
+                    </div>
+                    <button type="button" class="text-red-500 hover:text-red-700" onclick="deleteSelection(${index})">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                `;
+                selectionsContainer.appendChild(selectionDiv);
+            });
+        }
+
+        function deleteSelection(index) {
+            currentSelections.splice(index, 1);
+            renderSelections();
+        }
+
+        function showSelectionModal() {
+            selectionModal.classList.remove('hidden');
+        }
+
+        function hideSelectionModal() {
+            selectionModal.classList.add('hidden');
+            selectionForm.reset();
+            selectionNameInput.disabled = true;
+            selectionNameInput.value = '';
+        }
+
+        // --- Event Listeners for Selections ---
+        addSelectionBtn.addEventListener('click', () => {
+            showSelectionModal();
+        });
+
+        cancelSelectionBtn.addEventListener('click', () => {
+            hideSelectionModal();
+        });
+
+        selectionType.addEventListener('change', (e) => {
+            selectionNameInput.disabled = e.target.value !== 'custom';
+            if (e.target.value === 'custom') {
+                selectionNameInput.focus();
+            } else {
+                selectionNameInput.value = '';
+            }
+            selectionValuesInput.placeholder = e.target.value === 'size' ? 'e.g., S, M, L' : e.target.value === 'color' ? 'e.g., Red, Blue, Green' : 'e.g., 60, 40, 50';
+        });
+
+        selectionForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const type = selectionType.value;
+            const name = type === 'custom' ? selectionNameInput.value.trim() : selectionType.options[selectionType.selectedIndex].text.split(' ')[0];
+            const values = selectionValuesInput.value.split(',').map(v => v.trim()).filter(v => v !== '');
+
+            if (!name || values.length === 0) {
+                alert('Please provide a name and at least one value for the selection.');
+                return;
+            }
+
+            currentSelections.push({ name, values });
+            renderSelections();
+            hideSelectionModal();
+        });
+
         // --- PRODUCT MANAGEMENT ---
         productForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -316,6 +425,7 @@
                 description: form.description.value,
                 stock: parseInt(form.stock.value, 10),
                 image: form.image.value,
+                selections: currentSelections,
             };
 
             const token = getToken();
@@ -350,6 +460,8 @@
                 form.reset();
                 productOriginalName.value = '';
                 submitButtonText.textContent = 'Add Product';
+                currentSelections = [];
+                renderSelections();
                 loadProducts();
             } catch (err) {
                 console.error('Failed to save product:', err);
@@ -361,15 +473,17 @@
             }
         });
 
-        function editProduct(name, price, category, description, stock, image) {
-            productForm.name.value = name;
-            productForm.price.value = price;
-            productForm.category.value = category;
-            productForm.description.value = description;
-            productForm.stock.value = stock;
-            productForm.image.value = image;
-            productOriginalName.value = name;
+        function editProduct(product) {
+            productForm.name.value = product.name;
+            productForm.price.value = product.price;
+            productForm.category.value = product.category;
+            productForm.description.value = product.description;
+            productForm.stock.value = product.stock;
+            productForm.image.value = product.image;
+            productOriginalName.value = product.name;
             submitButtonText.textContent = 'Update Product';
+            currentSelections = product.selections || [];
+            renderSelections();
         }
 
         async function deleteProduct(name) {
@@ -397,60 +511,64 @@
         }
 
         async function loadProducts() {
-    productList.innerHTML = `<p class="col-span-full text-center text-gray-500 flex items-center justify-center">
-                                 <svg class="animate-spin h-5 w-5 mr-3 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                 </svg> Loading products...
-                             </p>`;
+            productList.innerHTML = `<p class="col-span-full text-center text-gray-500 flex items-center justify-center">
+                                         <svg class="animate-spin h-5 w-5 mr-3 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                         </svg> Loading products...
+                                     </p>`;
 
-    try {
-        const res = await fetch('https://test-ecommerce-backend-icgy.onrender.com/api/products');
+            try {
+                const res = await fetch('https://test-ecommerce-backend-icgy.onrender.com/api/products');
 
-        if (!res.ok) {
-            throw new Error('Network response was not ok.');
+                if (!res.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+
+                const products = await res.json();
+                productList.innerHTML = '';
+                if (products.length === 0) {
+                    productList.innerHTML = '<p class="col-span-full text-center text-gray-500">No products found.</p>';
+                    return;
+                }
+                products.forEach(p => {
+                    const productDiv = document.createElement('div');
+                    productDiv.className = `bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex items-center space-x-4`;
+                    productDiv.innerHTML = `
+                        <div class="flex-shrink-0">
+                            <img src="${p.image}" alt="${p.name}" class="w-16 h-16 object-cover rounded-lg">
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-bold text-gray-900">${p.name}</h3>
+                            <p class="text-sm text-gray-600">Price: <span class="font-semibold">$${p.price}</span></p>
+                            <p class="text-xs text-gray-500">Category: ${p.category}</p>
+                            <p class="text-xs text-gray-500">Stock: ${p.stock}</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="edit-btn flex-shrink-0 p-2 text-sm bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition-colors" data-product='${JSON.stringify(p)}'>
+                                Edit
+                            </button>
+                            <button onclick="deleteProduct('${p.name.replace(/'/g, "\\'")}')" class="flex-shrink-0 p-2 text-sm bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors">
+                                Delete
+                            </button>
+                        </div>
+                    `;
+                    productList.appendChild(productDiv);
+                });
+
+                // Attach event listeners for edit buttons after they've been created
+                document.querySelectorAll('.edit-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const productData = JSON.parse(e.currentTarget.getAttribute('data-product'));
+                        editProduct(productData);
+                    });
+                });
+
+            } catch (err) {
+                console.error('Failed to load products:', err);
+                productList.innerHTML = '<p class="col-span-full text-center text-red-500">Failed to load products.</p>';
+            }
         }
-
-        const products = await res.json();
-        productList.innerHTML = '';
-        if (products.length === 0) {
-            productList.innerHTML = '<p class="col-span-full text-center text-gray-500">No products found.</p>';
-            return;
-        }
-        products.forEach(p => {
-            // Check if the product name and other properties exist
-            const productName = p.name ? p.name.replace(/'/g, "\\'") : '';
-            const productCategory = p.category ? p.category.replace(/'/g, "\\'") : '';
-            const productDescription = p.description ? p.description.replace(/'/g, "\\'") : '';
-            const productImage = p.image ? p.image.replace(/'/g, "\\'") : '';
-
-            const productDiv = document.createElement('div');
-            productDiv.className = `bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex items-center space-x-4`;
-            productDiv.innerHTML = `
-                <div class="flex-shrink-0">
-                    <img src="${p.image}" alt="${p.name}" class="w-16 h-16 object-cover rounded-lg">
-                </div>
-                <div class="flex-1">
-                    <h3 class="text-lg font-bold text-gray-900">${p.name}</h3>
-                    <p class="text-sm text-gray-600">Price: <span class="font-semibold">$${p.price}</span></p>
-                    <p class="text-xs text-gray-500">Category: ${p.category}</p>
-                </div>
-                <div class="flex space-x-2">
-                    <button onclick="editProduct('${productName}', '${p.price}', '${productCategory}', '${productDescription}', '${p.stock}', '${productImage}')" class="flex-shrink-0 p-2 text-sm bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition-colors">
-                        Edit
-                    </button>
-                    <button onclick="deleteProduct('${productName}')" class="flex-shrink-0 p-2 text-sm bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors">
-                        Delete
-                    </button>
-                </div>
-            `;
-            productList.appendChild(productDiv);
-        });
-    } catch (err) {
-        console.error('Failed to load products:', err);
-        productList.innerHTML = '<p class="col-span-full text-center text-red-500">Failed to load products.</p>';
-    }
-}
 
         // --- User Management Functions ---
         async function loadUsers() {
@@ -459,7 +577,7 @@
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg> Loading users...
-                                  </p>`;
+                                 </p>`;
 
             try {
                 const res = await fetch('https://test-ecommerce-backend-icgy.onrender.com/api/users', {
@@ -542,17 +660,17 @@
         // --- Order Management Functions ---
         async function loadOrders() {
             orderList.innerHTML = `<p class="text-center text-gray-500 flex items-center justify-center">
-                                     <svg class="animate-spin h-5 w-5 mr-3 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                     </svg> Loading orders...
-                                  </p>`;
+                                    <svg class="animate-spin h-5 w-5 mr-3 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg> Loading orders...
+                                </p>`;
 
             try {
                 const res = await fetch('https://test-ecommerce-backend-icgy.onrender.com/api/orders', {
                     headers: { 'Authorization': `Bearer ${getToken()}` }
                 });
-              
+            
                 if (!res.ok) {
                     if (res.status === 401 || res.status === 403) {
                         removeToken();
@@ -601,9 +719,9 @@
                     <p class="text-sm text-gray-600 mb-2">
                         <span class="font-semibold">Address:</span> ${order.shipping.address}
                     </p>
-                        <p class="text-sm text-gray-600 mb-2">
-                         <span class="font-semibold">Number:</span> ${order.shipping.phone}
-                     </p>
+                    <p class="text-sm text-gray-600 mb-2">
+                       <span class="font-semibold">Number:</span> ${order.shipping.phone}
+                   </p>
                     <p class="text-sm text-gray-600 mb-2">
                         <span class="font-semibold">Total:</span> $<span class="font-bold text-indigo-700">${orderTotal}</span>
                     </p>
