@@ -80,6 +80,14 @@
                             <input class="rounded-lg w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3" placeholder="Description" required name="description">
                             <input class="rounded-lg w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3" placeholder="Stock" required name="stock" type="number">
                             <input class="rounded-lg w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3" placeholder="Image URL" required name="image" type="url">
+                            
+                            <div id="small-images-container" class="space-y-2">
+                                <h3 class="font-semibold text-gray-700 mb-2">Small Images (Optional)</h3>
+                                <input class="rounded-lg w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3" placeholder="Small Image URL 1" name="smallImage1" type="url">
+                                <input class="rounded-lg w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3" placeholder="Small Image URL 2" name="smallImage2" type="url">
+                                <input class="rounded-lg w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3" placeholder="Small Image URL 3" name="smallImage3" type="url">
+                                <input class="rounded-lg w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3" placeholder="Small Image URL 4" name="smallImage4" type="url">
+                            </div>
 
                             <div>
                                 <h3 class="font-semibold text-gray-700 mb-2">Product Selections</h3>
@@ -148,8 +156,9 @@
                     <input type="text" id="selection-name" placeholder="e.g., Material, Flavour" class="mt-1 block w-full rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3" disabled>
                 </div>
                 <div>
-                    <label for="selection-values" class="block text-sm font-medium text-gray-700">Selection Values (comma-separated)</label>
-                    <input type="text" id="selection-values" placeholder="e.g., S, M, L or Red, Blue, Green" class="mt-1 block w-full rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3" required>
+                    <label class="block text-sm font-medium text-gray-700">Selection Values</label>
+                    <div id="selection-values-container" class="space-y-2 mt-1"></div>
+                    <button type="button" id="add-value-btn" class="mt-2 w-full rounded-lg px-4 py-2 bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors">Add Value</button>
                 </div>
                 <div class="flex justify-end space-x-2">
                     <button type="button" id="cancel-selection-btn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">Cancel</button>
@@ -210,8 +219,10 @@
         const selectionForm = document.getElementById('selection-form');
         const selectionType = document.getElementById('selection-type');
         const selectionNameInput = document.getElementById('selection-name');
-        const selectionValuesInput = document.getElementById('selection-values');
+        const selectionValuesContainer = document.getElementById('selection-values-container');
+        const addValueBtn = document.getElementById('add-value-btn');
         const cancelSelectionBtn = document.getElementById('cancel-selection-btn');
+        const smallImagesContainer = document.getElementById('small-images-container');
 
         let currentSelections = [];
 
@@ -343,10 +354,16 @@
             currentSelections.forEach((sel, index) => {
                 const selectionDiv = document.createElement('div');
                 selectionDiv.className = 'bg-gray-100 p-3 rounded-lg flex items-center justify-between';
+                const valuesHtml = sel.values.map(v => {
+                    const valueName = v.name;
+                    const valueImage = v.imageUrl ? `<img src="${v.imageUrl}" class="w-6 h-6 rounded-full inline-block mr-1" alt="${valueName}">` : '';
+                    return `<span>${valueImage}${valueName}</span>`;
+                }).join(', ');
+                
                 selectionDiv.innerHTML = `
                     <div>
                         <span class="font-bold text-sm">${sel.name}:</span>
-                        <span class="text-sm">${sel.values.join(', ')}</span>
+                        <span class="text-sm">${valuesHtml}</span>
                     </div>
                     <button type="button" class="text-red-500 hover:text-red-700" onclick="deleteSelection(${index})">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -365,6 +382,8 @@
 
         function showSelectionModal() {
             selectionModal.classList.remove('hidden');
+            clearSelectionValues();
+            addSelectionValueInput();
         }
 
         function hideSelectionModal() {
@@ -372,6 +391,29 @@
             selectionForm.reset();
             selectionNameInput.disabled = true;
             selectionNameInput.value = '';
+            clearSelectionValues();
+        }
+
+        function clearSelectionValues() {
+            selectionValuesContainer.innerHTML = '';
+        }
+        
+        function addSelectionValueInput(value = '', imageUrl = '') {
+            const valueDiv = document.createElement('div');
+            valueDiv.className = 'flex space-x-2 items-center';
+            valueDiv.innerHTML = `
+                <input type="text" placeholder="Value (e.g., Red, S)" class="flex-1 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-2 selection-value-name" value="${value}" required>
+                <input type="url" placeholder="Image URL (optional)" class="flex-1 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-2 selection-value-image" value="${imageUrl}">
+                <button type="button" class="p-1 text-red-500 hover:text-red-700 remove-value-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            `;
+            selectionValuesContainer.appendChild(valueDiv);
+            valueDiv.querySelector('.remove-value-btn').addEventListener('click', () => {
+                valueDiv.remove();
+            });
         }
 
         // --- Event Listeners for Selections ---
@@ -382,6 +424,10 @@
         cancelSelectionBtn.addEventListener('click', () => {
             hideSelectionModal();
         });
+        
+        addValueBtn.addEventListener('click', () => {
+            addSelectionValueInput();
+        });
 
         selectionType.addEventListener('change', (e) => {
             selectionNameInput.disabled = e.target.value !== 'custom';
@@ -390,14 +436,21 @@
             } else {
                 selectionNameInput.value = '';
             }
-            selectionValuesInput.placeholder = e.target.value === 'size' ? 'e.g., S, M, L' : e.target.value === 'color' ? 'e.g., Red, Blue, Green' : 'e.g., 60, 40, 50';
         });
 
         selectionForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const type = selectionType.value;
             const name = type === 'custom' ? selectionNameInput.value.trim() : selectionType.options[selectionType.selectedIndex].text.split(' ')[0];
-            const values = selectionValuesInput.value.split(',').map(v => v.trim()).filter(v => v !== '');
+            
+            const valueInputs = selectionValuesContainer.querySelectorAll('.selection-value-name');
+            const imageUrlInputs = selectionValuesContainer.querySelectorAll('.selection-value-image');
+            const values = Array.from(valueInputs).map((input, index) => {
+                return {
+                    name: input.value.trim(),
+                    imageUrl: imageUrlInputs[index].value.trim()
+                };
+            }).filter(v => v.name !== '');
 
             if (!name || values.length === 0) {
                 alert('Please provide a name and at least one value for the selection.');
@@ -418,6 +471,14 @@
 
             const form = e.target;
             const originalName = form['original-name'].value;
+            
+            const smallImages = [
+                form.smallImage1.value,
+                form.smallImage2.value,
+                form.smallImage3.value,
+                form.smallImage4.value,
+            ].filter(url => url.trim() !== '');
+
             const product = {
                 name: form.name.value,
                 price: parseFloat(form.price.value),
@@ -425,6 +486,7 @@
                 description: form.description.value,
                 stock: parseInt(form.stock.value, 10),
                 image: form.image.value,
+                smallImages: smallImages,
                 selections: currentSelections,
             };
 
@@ -481,6 +543,13 @@
             productForm.stock.value = product.stock;
             productForm.image.value = product.image;
             productOriginalName.value = product.name;
+            
+            // Populate small images
+            const smallImageInputs = smallImagesContainer.querySelectorAll('input');
+            smallImageInputs.forEach((input, index) => {
+                input.value = product.smallImages && product.smallImages[index] ? product.smallImages[index] : '';
+            });
+
             submitButtonText.textContent = 'Update Product';
             currentSelections = product.selections || [];
             renderSelections();
