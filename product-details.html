@@ -212,6 +212,15 @@
                 return;
             }
 
+            // Determine the price to use. Use the selected option's price if available, otherwise use the base product price.
+            let itemPrice = product.price;
+            for (const key in selectedOptions) {
+                if (selectedOptions[key].price !== undefined) {
+                    itemPrice = selectedOptions[key].price;
+                    break;
+                }
+            }
+
             // Determine the image to use for the cart item
             let cartImage = product.image;
             const selectedImageValue = Object.values(selectedOptions).find(option => option.imageUrl);
@@ -230,6 +239,7 @@
             } else {
                 cart.push({
                     ...product,
+                    price: itemPrice, // Use the determined price
                     name: itemNameInCart,
                     quantity,
                     image: cartImage,
@@ -272,7 +282,7 @@
             if (!requiredSelections || requiredSelections.length === 0) {
                 return true;
             }
-            return requiredSelections.every(selection => selectedOptions[selection.name] !== null);
+            return requiredSelections.every(selection => selectedOptions[selection.name] !== undefined);
         }
         // Magnification logic
         function setupMagnifier(imageElement, lensElement, zoomLevel) {
@@ -383,7 +393,7 @@
                             <p class="text-xl text-gray-500">
                                 <span class="font-semibold text-gray-800">Category:</span> ${product.category}
                             </p>
-                            <p class="text-4xl font-bold text-indigo-600 mt-2">$${product.price}</p>
+                            <p id="product-price" class="text-4xl font-bold text-indigo-600 mt-2">$${product.price.toFixed(2)}</p>
                             <div class="pt-4 border-t border-gray-200">
                                 <h3 class="text-lg font-bold text-gray-800 mb-2">Description</h3>
                                 <p class="text-gray-600">${product.description || 'No description provided.'}</p>
@@ -446,7 +456,7 @@
                             <h3 class="text-lg font-bold text-gray-800 mb-2">${selection.name}</h3>
                             <div class="flex flex-wrap gap-2" data-selection-name="${selection.name}">
                                 ${selection.values.map(value => `
-                                    <button type="button" class="selection-value px-4 py-2 border border-gray-300 rounded-md hover:border-indigo-600 transition-colors flex items-center gap-2" data-value="${value.name}" data-image-url="${value.imageUrl || ''}">
+                                    <button type="button" class="selection-value px-4 py-2 border border-gray-300 rounded-md hover:border-indigo-600 transition-colors flex items-center gap-2" data-value="${value.name}" data-image-url="${value.imageUrl || ''}" data-price="${value.price !== undefined ? value.price : ''}">
                                         ${value.imageUrl ? `<img src="${value.imageUrl}" alt="${value.name}" class="w-6 h-6 rounded-full object-cover">` : ''}
                                         <span>${value.name}</span>
                                     </button>
@@ -454,19 +464,36 @@
                             </div>
                         `;
                         selectionsContainer.appendChild(selectionDiv);
-                        selectedOptions[selection.name] = null;
+                        selectedOptions[selection.name] = undefined;
                     });
                 } else {
                     selectionsContainer.innerHTML = ''; // Clear if no selections are available
                 }
                 // Add event listeners to selection buttons
                 const selectionButtons = document.querySelectorAll('.selection-value');
+                const priceEl = document.getElementById('product-price');
+                let basePrice = product.price;
+
+                function updatePriceDisplay() {
+                    let priceToDisplay = basePrice;
+                    // Find the price of the latest selected option with a defined price
+                    for (const selection of product.selections) {
+                        const selectedOption = selectedOptions[selection.name];
+                        if (selectedOption && selectedOption.price !== undefined && selectedOption.price !== '') {
+                            priceToDisplay = parseFloat(selectedOption.price);
+                            break; // Use the first found price and stop
+                        }
+                    }
+                    priceEl.textContent = `$${priceToDisplay.toFixed(2)}`;
+                }
+
                 selectionButtons.forEach(button => {
                     button.addEventListener('click', () => {
                         const parentDiv = button.closest('[data-selection-name]');
                         const selectionName = parentDiv.dataset.selectionName;
                         const valueName = button.dataset.value;
                         const imageUrl = button.dataset.imageUrl;
+                        const optionPrice = button.dataset.price;
 
                         // Remove 'selected' class from other buttons in the same group
                         parentDiv.querySelectorAll('.selection-value').forEach(btn => {
@@ -477,8 +504,12 @@
 
                         selectedOptions[selectionName] = {
                             name: valueName,
-                            imageUrl: imageUrl || null
+                            imageUrl: imageUrl || null,
+                            price: optionPrice !== '' ? parseFloat(optionPrice) : undefined
                         };
+
+                        // Update the displayed price
+                        updatePriceDisplay();
                     });
                 });
                 // Add to cart button logic

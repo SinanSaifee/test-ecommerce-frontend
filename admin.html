@@ -357,7 +357,8 @@
                 const valuesHtml = sel.values.map(v => {
                     const valueName = v.name;
                     const valueImage = v.imageUrl ? `<img src="${v.imageUrl}" class="w-6 h-6 rounded-full inline-block mr-1" alt="${valueName}">` : '';
-                    return `<span>${valueImage}${valueName}</span>`;
+                    const valuePrice = v.price ? ` ($${v.price})` : '';
+                    return `<span>${valueImage}${valueName}${valuePrice}</span>`;
                 }).join(', ');
                 
                 selectionDiv.innerHTML = `
@@ -398,11 +399,12 @@
             selectionValuesContainer.innerHTML = '';
         }
         
-        function addSelectionValueInput(value = '', imageUrl = '') {
+        function addSelectionValueInput(value = '', imageUrl = '', price = '') {
             const valueDiv = document.createElement('div');
             valueDiv.className = 'flex space-x-2 items-center';
             valueDiv.innerHTML = `
                 <input type="text" placeholder="Value (e.g., Red, S)" class="flex-1 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-2 selection-value-name" value="${value}" required>
+                <input type="number" placeholder="Price (optional)" class="flex-1 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-2 selection-value-price" value="${price}">
                 <input type="url" placeholder="Image URL (optional)" class="flex-1 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-2 selection-value-image" value="${imageUrl}">
                 <button type="button" class="p-1 text-red-500 hover:text-red-700 remove-value-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -445,10 +447,13 @@
             
             const valueInputs = selectionValuesContainer.querySelectorAll('.selection-value-name');
             const imageUrlInputs = selectionValuesContainer.querySelectorAll('.selection-value-image');
+            const priceInputs = selectionValuesContainer.querySelectorAll('.selection-value-price');
+
             const values = Array.from(valueInputs).map((input, index) => {
                 return {
                     name: input.value.trim(),
-                    imageUrl: imageUrlInputs[index].value.trim()
+                    imageUrl: imageUrlInputs[index].value.trim(),
+                    price: priceInputs[index].value.trim() !== '' ? parseFloat(priceInputs[index].value) : undefined
                 };
             }).filter(v => v.name !== '');
 
