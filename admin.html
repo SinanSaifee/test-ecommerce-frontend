@@ -75,7 +75,8 @@
                         <form class="space-y-4" id="product-form">
                             <input name="original-name" type="hidden" id="product-original-name">
                             <input class="rounded-lg w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3" placeholder="Name" required name="name">
-                            <input class="rounded-lg w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3" placeholder="Price" required name="price" type="number">
+                            <input class="rounded-lg w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3" placeholder="Price" required name="price" type="text">
+                            <input class="rounded-lg w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3" placeholder="Discount (e.g., '10%' or '$5')" name="discount" type="text">
                             <input class="rounded-lg w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3" placeholder="Category" required name="category">
                             <input class="rounded-lg w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3" placeholder="Description" required name="description">
                             <input class="rounded-lg w-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 p-3" placeholder="Stock" required name="stock" type="number">
@@ -101,7 +102,7 @@
                                 <span id="submit-button-text">Add Product</span>
                                 <svg class="hidden h-5 w-5 -ml-2.5 -mt-2.5 absolute animate-spin left-1/2 text-white top-1/2" fill="none" id="submit-spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <circle cx="12" cy="12" r="10" class="opacity-25" stroke="currentColor" stroke-width="4"></circle>
-                                    <path d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" class="opacity-75" fill="currentColor"></path>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" class="opacity-75" fill="currentColor"></path>
                                 </svg>
                             </button>
                         </form>
@@ -487,6 +488,7 @@
             const product = {
                 name: form.name.value,
                 price: parseFloat(form.price.value),
+                discount: form.discount.value,
                 category: form.category.value,
                 description: form.description.value,
                 stock: parseInt(form.stock.value, 10),
@@ -543,6 +545,7 @@
         function editProduct(product) {
             productForm.name.value = product.name;
             productForm.price.value = product.price;
+            productForm.discount.value = product.discount || '';
             productForm.category.value = product.category;
             productForm.description.value = product.description;
             productForm.stock.value = product.stock;

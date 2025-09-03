@@ -432,6 +432,26 @@
                             </svg>
                         </button>
                         `;
+                    
+                    let discountTagHtml = '';
+                    let originalPriceHtml = '';
+
+                    if (p.discount) {
+                        discountTagHtml = `<div class="absolute top-2 left-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-full z-10">${p.discount}</div>`;
+                        
+                        let originalPrice = 0;
+                        if (p.discount.includes('%')) {
+                            const percentage = parseFloat(p.discount) / 100;
+                            originalPrice = p.price / (1 - percentage);
+                        } else if (p.discount.includes('$')) {
+                            const dollarAmount = parseFloat(p.discount.substring(1));
+                            originalPrice = p.price + dollarAmount;
+                        }
+
+                        if (originalPrice > 0) {
+                            originalPriceHtml = `<div class="text-sm text-gray-400 line-through">$${originalPrice.toFixed(2)}</div>`;
+                        }
+                    }
 
                     const productDiv = document.createElement('div');
                     productDiv.className = 'relative bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1 transition-transform duration-300';
@@ -439,10 +459,14 @@
                                 <div class="overflow-hidden rounded-t-xl">
                                     <img src="${p.image}" alt="${p.name}" class="w-full h-48 object-cover transition-transform duration-500 hover:scale-110">
                                 </div>
+                                ${discountTagHtml}
                                 <div class="p-6">
                                     <h3 class="text-lg font-bold text-gray-900 truncate">${p.name}</h3>
                                     <p class="mt-1 text-sm text-gray-500">${p.category}</p>
-                                    <p class="mt-4 text-2xl font-extrabold text-indigo-600">$${p.price}</p>
+                                    <div class="mt-4 flex items-baseline space-x-2">
+                                        <p class="text-2xl font-extrabold text-indigo-600">$${p.price}</p>
+                                        ${originalPriceHtml}
+                                    </div>
                                     ${hasSelections ? buttonHtml : ''}
                                 </div>
                             </a>
