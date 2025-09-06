@@ -374,7 +374,7 @@
                 const res = await fetch('https://test-ecommerce-backend-icgy.onrender.com/api/products');
                 if (!res.ok) throw new Error('Failed to fetch products');
                 const products = await res.json();
-                const product = products.find(p => p.name === productName);
+                const product = products.find(p => p.name.toLowerCase().trim() === productName.toLowerCase().trim());
                 if (!product) {
                     window.document.title = `product not found`;
                     detailsContainer.innerHTML = `
