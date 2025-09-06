@@ -273,10 +273,21 @@
             }
         }
         // Get 'name' query param
-        function getQueryParam(param) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(param);
+      function getQueryParam() {
+    const urlParams = new URLSearchParams(window.location.search);
+    let name = urlParams.get("name");
+
+    if (!name) {
+        // fallback: check path /product/:name
+        const pathParts = window.location.pathname.split("/");
+        if (pathParts.length > 2 && pathParts[1] === "product") {
+            name = pathParts[2];
         }
+    }
+
+    return name;
+}
+
         // New validation function
         function validateSelections(selectedOptions, requiredSelections) {
             if (!requiredSelections || requiredSelections.length === 0) {
@@ -393,7 +404,7 @@
                             <p class="text-xl text-gray-500">
                                 <span class="font-semibold text-gray-800">Category:</span> ${product.category}
                             </p>
-                            <p id="product-price" class="text-4xl font-bold text-indigo-600 mt-2">$${product.price.toFixed(2)}</p>
+                            <p id="product-price" class="text-4xl font-bold text-indigo-600 mt-2">$${product.price}</p>
                             <div class="pt-4 border-t border-gray-200">
                                 <h3 class="text-lg font-bold text-gray-800 mb-2">Description</h3>
                                 <p class="text-gray-600">${product.description || 'No description provided.'}</p>
@@ -479,12 +490,16 @@
                     // Find the price of the latest selected option with a defined price
                     for (const selection of product.selections) {
                         const selectedOption = selectedOptions[selection.name];
-                        if (selectedOption && selectedOption.price !== undefined && selectedOption.price !== '') {
+                        if (selectedOption && selectedOption.price !== undefined && selectedOption.price !== '' && selectedOption.price !== 0 ){
                             priceToDisplay = parseFloat(selectedOption.price);
                             break; // Use the first found price and stop
                         }
+                        else{
+                            priceToDisplay = basePrice;
+                        }
                     }
-                    priceEl.textContent = `$${priceToDisplay.toFixed(2)}`;
+
+                    priceEl.textContent = `$${priceToDisplay}`;
                 }
 
                 selectionButtons.forEach(button => {
