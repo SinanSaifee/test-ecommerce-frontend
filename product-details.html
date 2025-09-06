@@ -273,7 +273,8 @@
             }
         }
         // Get 'name' query param
-      function getQueryParam() {
+      
+function getQueryParam() {
     const urlParams = new URLSearchParams(window.location.search);
     let name = urlParams.get("name");
 
@@ -281,12 +282,14 @@
         // fallback: check path /product/:name
         const pathParts = window.location.pathname.split("/");
         if (pathParts.length > 2 && pathParts[1] === "product") {
-            name = pathParts[2];
+            // decode %20 → spaces, etc.
+            name = decodeURIComponent(pathParts.slice(2).join("/"));
         }
     }
 
     return name;
 }
+
 
         // New validation function
         function validateSelections(selectedOptions, requiredSelections) {
