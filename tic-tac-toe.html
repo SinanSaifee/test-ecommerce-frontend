@@ -36,7 +36,7 @@
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            fetch('https://cors-anywhere.herokuapp.com/https://ipapi.co/json/')
+            fetch('https://ipapi.co/json/')
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Failed to fetch IP and location data');
